@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Calendar, Trophy, Camera, CheckCircle, Clock, Star, Leaf, Target, Award } from "lucide-react";
+import SaplingChallenge from "./SaplingChallenge"; // Import the model popup component
 
 const Challenges = () => {
   const navigate = useNavigate();
@@ -18,6 +19,8 @@ const Challenges = () => {
     treesPlanted: 2,
     totalCompleted: 0
   });
+
+  const [showSaplingModal, setShowSaplingModal] = useState(false);
 
   const dailyChallenges = [
     {
@@ -511,7 +514,7 @@ const Challenges = () => {
               </div>
 
               <button
-                onClick={navigateToTreePlanting}
+                onClick={() => setShowSaplingModal(true)}
                 className="w-full py-4 px-8 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-2xl font-bold text-lg hover:from-green-700 hover:to-emerald-700 transition-all duration-300 hover:scale-105 shadow-lg animate-tree-button"
               >
                 Start Tree Verification
@@ -529,6 +532,21 @@ const Challenges = () => {
           </div>
         </div>
       </div>
+      
+      {showSaplingModal && (
+  <div className="fixed inset-0 bg-opacity-50 flex items-end justify-center z-50 p-40">
+    <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-lg relative">
+      <button
+        className="absolute top-2 right-2 text-gray-500 hover:text-gray-800"
+        onClick={() => setShowSaplingModal(false)}
+      >
+        ✕
+      </button>
+
+      <SaplingChallenge />
+    </div>
+  </div>
+)}
 
       {/* Autumn-themed CSS Animations */}
       <style jsx>{`

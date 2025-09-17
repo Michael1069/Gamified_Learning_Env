@@ -1,8 +1,14 @@
 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap');
 
-/* Arcade Heading Font */
+/* ===============================
+   Retro Fonts
+   =============================== */
 .font-retro-heading {
   font-family: 'Press Start 2P', cursive;
+}
+
+.font-retro-body {
+  font-family: 'VT323', monospace;
 }
 
 html, body, #root {
@@ -13,32 +19,23 @@ html, body, #root {
   background: #f3f4f6; /* Matches Tailwind bg-gray-100 */
 }
 
-/* Apply retro font globally */
 body {
   font-family: 'VT323', monospace;
   letter-spacing: 0.5px;
 }
 
-/* Optional: remove scroll bounce margins on some browsers */
 * {
   box-sizing: border-box;
 }
 
-/* Retro Console Style */
-.font-retro-body {
-  font-family: 'VT323', monospace;
-}
+/* ===============================
+   Retro Console Style (Optional)
+   =============================== */
+/* Removed #root border & padding styles to avoid white box */
 
-/* REMOVE this to prevent white border:
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
-}
-*/
-
-/* Keep your logo & animation styles if needed */
+/* ===============================
+   Logo Effects
+   =============================== */
 .logo {
   height: 6em;
   padding: 1.5em;
@@ -73,4 +70,44 @@ body {
 
 .read-the-docs {
   color: #888;
+}
+
+/* ===============================
+   Custom Background Animations
+   =============================== */
+
+/* 🌳 Tree sway */
+@keyframes treeSway {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(2deg); }
+}
+.animate-tree-sway {
+  animation: treeSway 6s ease-in-out infinite;
+}
+
+/* 🍃 Leaf falling */
+@keyframes leafFall {
+  0% { transform: translateY(-10%) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
+}
+.animate-leaf-fall {
+  animation: leafFall 10s linear infinite;
+}
+
+/* ✨ Floating particles */
+@keyframes particleDrift {
+  0%, 100% { transform: translateY(0) translateX(0); }
+  50% { transform: translateY(-10px) translateX(5px); }
+}
+.animate-particle-drift {
+  animation: particleDrift 4s ease-in-out infinite;
+}
+
+/* 💨 Wind */
+@keyframes windBlow {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+.animate-wind-blow {
+  animation: windBlow 8s linear infinite;
 }

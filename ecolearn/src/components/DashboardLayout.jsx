@@ -205,7 +205,7 @@ const DashboardLayout = () => {
                     <button
                       className="block w-full text-left px-4 py-3 hover:bg-yellow-50 transition-all duration-200 flex items-center gap-3 rounded-xl group"
                       onClick={() => {
-                        navigate("/dashboard/achievements");
+                        navigate("/dashboard/profile#achievements");
                         setDropdownOpen(false);
                       }}
                     >

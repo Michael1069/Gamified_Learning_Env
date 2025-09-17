@@ -1,8 +1,5 @@
-// src/pages/LiveData.jsx
 import { useState, useEffect } from "react";
-import PageWrapper from "../components/PageWrapper";
-import axios from "axios";
-import { motion } from "framer-motion"; // ✅ Add this at the top
+import { motion } from "framer-motion";
 
 const topics = [
   { label: "🌳 Trees", value: "trees" },
@@ -31,12 +28,147 @@ const rotatingMessages = [
   "⚡ Turning off unused devices can save up to 10% of your household energy.",
 ];
 
-const tips = {
-  trees: "🌱 Planting 20 trees absorbs as much CO₂ as a car emits in a year!",
-  wastewater:
-    "💧 Every litre of recycled water saves 1.5L of groundwater – small steps save big resources!",
-  climate:
-    "🌍 Switching to renewable energy can cut CO₂ emissions by 70% by 2050!",
+// Animated Background Components
+const DataParticle = ({ index, delay = 0 }) => {
+  const symbols = ['📊', '📈', '📉', '🔍', '💹', '📋', '🔢', '⚡', '🌐', '💻'];
+  
+  return (
+    <motion.div
+      className="absolute text-green-200/20 text-xl pointer-events-none"
+      initial={{ 
+        x: Math.random() * window.innerWidth,
+        y: Math.random() * window.innerHeight,
+        opacity: 0 
+      }}
+      animate={{ 
+        x: [null, Math.random() * window.innerWidth],
+        y: [null, Math.random() * window.innerHeight],
+        opacity: [0, 0.6, 0]
+      }}
+      transition={{
+        duration: 8 + Math.random() * 4,
+        repeat: Infinity,
+        delay: delay,
+        ease: "linear"
+      }}
+    >
+      {symbols[index % symbols.length]}
+    </motion.div>
+  );
+};
+
+const FloatingChart = ({ type, delay = 0 }) => {
+  const chartTypes = {
+    bar: (
+      <svg width="60" height="40" className="text-green-300/30">
+        <rect x="10" y="20" width="8" height="20" fill="currentColor" />
+        <rect x="22" y="15" width="8" height="25" fill="currentColor" />
+        <rect x="34" y="10" width="8" height="30" fill="currentColor" />
+        <rect x="46" y="25" width="8" height="15" fill="currentColor" />
+      </svg>
+    ),
+    line: (
+      <svg width="60" height="40" className="text-blue-300/30">
+        <path d="M5,35 Q15,20 25,25 T45,15" stroke="currentColor" strokeWidth="2" fill="none" />
+        <circle cx="5" cy="35" r="2" fill="currentColor" />
+        <circle cx="25" cy="25" r="2" fill="currentColor" />
+        <circle cx="45" cy="15" r="2" fill="currentColor" />
+      </svg>
+    ),
+    pie: (
+      <svg width="40" height="40" className="text-purple-300/30">
+        <circle cx="20" cy="20" r="18" fill="none" stroke="currentColor" strokeWidth="2" />
+        <path d="M20,2 A18,18 0 0,1 35,15 L20,20 Z" fill="currentColor" opacity="0.6" />
+        <path d="M35,15 A18,18 0 0,1 20,38 L20,20 Z" fill="currentColor" opacity="0.4" />
+      </svg>
+    )
+  };
+
+  return (
+    <motion.div
+      className="absolute pointer-events-none"
+      initial={{ 
+        x: Math.random() * window.innerWidth,
+        y: Math.random() * window.innerHeight,
+        rotate: 0,
+        scale: 0.5,
+        opacity: 0
+      }}
+      animate={{ 
+        x: [null, Math.random() * window.innerWidth],
+        y: [null, Math.random() * window.innerHeight],
+        rotate: 360,
+        scale: [0.5, 1, 0.5],
+        opacity: [0, 0.8, 0]
+      }}
+      transition={{
+        duration: 12 + Math.random() * 6,
+        repeat: Infinity,
+        delay: delay,
+        ease: "easeInOut"
+      }}
+    >
+      {chartTypes[type]}
+    </motion.div>
+  );
+};
+
+const DataStream = ({ direction = "horizontal", delay = 0 }) => {
+  const dataPoints = Array.from({ length: 20 }, (_, i) => i);
+  
+  return (
+    <motion.div
+      className={`absolute ${direction === "horizontal" ? "flex" : "flex flex-col"} space-${direction === "horizontal" ? "x" : "y"}-2`}
+      initial={{ 
+        x: direction === "horizontal" ? -200 : Math.random() * window.innerWidth,
+        y: direction === "horizontal" ? Math.random() * window.innerHeight : -200,
+        opacity: 0
+      }}
+      animate={{ 
+        x: direction === "horizontal" ? window.innerWidth + 200 : [null, null],
+        y: direction === "horizontal" ? [null, null] : window.innerHeight + 200,
+        opacity: [0, 0.6, 0]
+      }}
+      transition={{
+        duration: 8,
+        repeat: Infinity,
+        delay: delay,
+        ease: "linear"
+      }}
+    >
+      {dataPoints.map((_, i) => (
+        <motion.div
+          key={i}
+          className="w-2 h-2 bg-gradient-to-r from-green-400 to-blue-400 rounded-full"
+          animate={{
+            scale: [0.5, 1.5, 0.5],
+            opacity: [0.3, 1, 0.3]
+          }}
+          transition={{
+            duration: 1.5,
+            repeat: Infinity,
+            delay: i * 0.1,
+            ease: "easeInOut"
+          }}
+        />
+      ))}
+    </motion.div>
+  );
+};
+
+const GridPattern = () => {
+  return (
+    <div className="absolute inset-0 opacity-5">
+      <svg width="100%" height="100%" className="text-green-500">
+        <defs>
+          <pattern id="grid" width="50" height="50" patternUnits="userSpaceOnUse">
+            <path d="M 50 0 L 0 0 0 50" fill="none" stroke="currentColor" strokeWidth="1" />
+          </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#grid)" />
+      </svg>
+    </div>
+  );
 };
 
 // Centralized Tableau Dashboard Config
@@ -204,24 +336,8 @@ const tableauDashboards = {
 const LiveData = () => {
   const [selectedTopic, setSelectedTopic] = useState(topics[0].value);
   const [selectedYear, setSelectedYear] = useState(years[0]);
-  const [data, setData] = useState([]);
   const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
   const [displayedText, setDisplayedText] = useState("");
-
-  useEffect(() => {
-    const fetchLiveData = async () => {
-      try {
-        const res = await axios.get("http://127.0.0.1:8000/api/livedata/", {
-          params: { topic: selectedTopic, year: selectedYear },
-        });
-        setData(res.data);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-
-    fetchLiveData();
-  }, [selectedTopic, selectedYear]);
 
   // Typewriter effect
   useEffect(() => {
@@ -256,77 +372,306 @@ const LiveData = () => {
     : null;
 
   return (
-    <PageWrapper>
-      <div className="space-y-4">
-        <h2 className="text-2xl font-bold mb-2">📡 Live Data</h2>
+    <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-slate-50 via-green-50 to-blue-50">
+      {/* Animated Background Elements */}
+      <GridPattern />
+      
+      {/* Data Particles */}
+      {Array.from({ length: 15 }).map((_, i) => (
+        <DataParticle key={`particle-${i}`} index={i} delay={i * 0.5} />
+      ))}
+      
+      {/* Floating Charts */}
+      {Array.from({ length: 8 }).map((_, i) => (
+        <FloatingChart 
+          key={`chart-${i}`} 
+          type={['bar', 'line', 'pie'][i % 3]} 
+          delay={i * 1.5} 
+        />
+      ))}
+      
+      {/* Data Streams */}
+      {Array.from({ length: 6 }).map((_, i) => (
+        <DataStream 
+          key={`stream-${i}`} 
+          direction={i % 2 === 0 ? "horizontal" : "vertical"} 
+          delay={i * 2} 
+        />
+      ))}
+      
+      {/* Animated Network Connections */}
+      <motion.div
+        className="absolute inset-0 pointer-events-none"
+        animate={{
+          background: [
+            "radial-gradient(circle at 20% 50%, rgba(34, 197, 94, 0.1) 0%, transparent 50%)",
+            "radial-gradient(circle at 80% 50%, rgba(59, 130, 246, 0.1) 0%, transparent 50%)",
+            "radial-gradient(circle at 50% 20%, rgba(168, 85, 247, 0.1) 0%, transparent 50%)",
+            "radial-gradient(circle at 20% 50%, rgba(34, 197, 94, 0.1) 0%, transparent 50%)"
+          ]
+        }}
+        transition={{
+          duration: 8,
+          repeat: Infinity,
+          ease: "linear"
+        }}
+      />
+
+      {/* Main Content */}
+      <div className="relative z-10 p-6 space-y-6">
+        <motion.div 
+          className="w-full flex flex-col items-center justify-center mb-12 relative"
+          initial={{ opacity: 0, y: -50 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+        >
+          {/* Glowing background effect */}
+          <motion.div
+            className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-32 blur-3xl opacity-30"
+            animate={{
+              background: [
+                "radial-gradient(ellipse at center, #10b981 0%, transparent 70%)",
+                "radial-gradient(ellipse at center, #3b82f6 0%, transparent 70%)",
+                "radial-gradient(ellipse at center, #8b5cf6 0%, transparent 70%)",
+                "radial-gradient(ellipse at center, #10b981 0%, transparent 70%)"
+              ]
+            }}
+            transition={{
+              duration: 4,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+          />
+          
+          {/* Main heading - perfectly centered */}
+          <motion.div 
+            className="flex items-center justify-center relative z-10"
+            animate={{
+              backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"]
+            }}
+            transition={{
+              duration: 3,
+              repeat: Infinity,
+              ease: "linear"
+            }}
+          >
+            <motion.span
+              animate={{ 
+                rotateY: [0, 360],
+                scale: [1, 1.1, 1]
+              }}
+              transition={{ 
+                duration: 2,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+              className="text-8xl mr-4"
+            >
+              📡
+            </motion.span>
+            <motion.h2 
+              className="text-8xl font-black bg-gradient-to-r from-green-600 via-blue-600 to-purple-600 bg-clip-text text-transparent drop-shadow-2xl m-0 p-0 leading-none"
+              animate={{
+                backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"]
+              }}
+              transition={{
+                duration: 3,
+                repeat: Infinity,
+                ease: "linear"
+              }}
+              style={{
+                backgroundSize: "200% 200%"
+              }}
+            >
+              LIVE DATA
+            </motion.h2>
+          </motion.div>
+          
+          {/* Subtitle - perfectly centered */}
+          <motion.p
+            className="text-xl text-gray-600 mt-6 font-medium tracking-wide m-0 p-0 text-center"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5, duration: 0.8 }}
+          >
+            Real-time Environmental Intelligence
+          </motion.p>
+          
+          {/* Decorative elements - centered */}
+          <div className="flex justify-center items-center mt-6 space-x-4">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <motion.div
+                key={i}
+                className="w-2 h-2 bg-gradient-to-r from-green-400 to-blue-400 rounded-full"
+                animate={{
+                  scale: [0.5, 1.5, 0.5],
+                  opacity: [0.3, 1, 0.3]
+                }}
+                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                  delay: i * 0.2,
+                  ease: "easeInOut"
+                }}
+              />
+            ))}
+          </div>
+          
+          {/* Side decorative lines - perfectly symmetric */}
+          <motion.div
+            className="absolute left-1/2 top-1/2 w-40 h-0.5 bg-gradient-to-r from-transparent via-green-400 to-transparent transform -translate-y-1/2 -translate-x-full"
+            style={{ marginLeft: '-20px' }}
+            animate={{
+              scaleX: [0, 1, 0],
+              opacity: [0, 1, 0]
+            }}
+            transition={{
+              duration: 3,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+          />
+          <motion.div
+            className="absolute left-1/2 top-1/2 w-40 h-0.5 bg-gradient-to-l from-transparent via-blue-400 to-transparent transform -translate-y-1/2"
+            style={{ marginLeft: '20px' }}
+            animate={{
+              scaleX: [0, 1, 0],
+              opacity: [0, 1, 0]
+            }}
+            transition={{
+              duration: 3,
+              repeat: Infinity,
+              delay: 1.5,
+              ease: "easeInOut"
+            }}
+          />
+        </motion.div>
 
         {/* Animated Insight Box */}
-        <div className="bg-green-50 p-4 rounded-lg border border-green-200 shadow-sm min-h-[60px] flex items-center justify-center">
+        <motion.div 
+          className="bg-white/80 backdrop-blur-sm p-6 rounded-xl border border-green-200/50 shadow-lg min-h-[80px] flex items-center justify-center relative overflow-hidden"
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.3, duration: 0.6 }}
+        >
+          {/* Background pulse effect */}
+          <motion.div
+            className="absolute inset-0 bg-gradient-to-r from-green-100/50 to-blue-100/50"
+            animate={{
+              opacity: [0.3, 0.6, 0.3],
+            }}
+            transition={{
+              duration: 2,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+          />
+          
           <motion.p
             key={currentMessageIndex}
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ type: "spring", stiffness: 120, damping: 10 }}
-            className="text-green-700 text-base font-semibold text-center"
+            className="text-green-700 text-lg font-semibold text-center relative z-10"
           >
             {displayedText}
             <span className="animate-pulse">|</span>
           </motion.p>
-        </div>
+        </motion.div>
 
-        {/* Visual Insights */}
-        <div className="mt-6">
-          <h3 className="text-xl font-semibold text-green-700 mb-2">
-            Visual Insights
+        {/* Visual Insights Section */}
+        <motion.div 
+          className="mt-8"
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6, duration: 0.8 }}
+        >
+          <h3 className="text-2xl font-bold text-green-700 mb-6 text-center">
+            📊 Visual Insights
           </h3>
 
-          {/* ✅ Dropdowns */}
-          <div className="flex space-x-4 mb-4">
-            <select
+          {/* Enhanced Dropdowns */}
+          <div className="flex justify-center space-x-6 mb-8">
+            <motion.select
               value={selectedTopic}
               onChange={(e) => setSelectedTopic(e.target.value)}
-              className="border px-3 py-2 rounded"
+              className="bg-white/90 backdrop-blur-sm border-2 border-green-300/50 px-4 py-3 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 focus:ring-2 focus:ring-green-400 focus:border-green-400 text-gray-700 font-medium"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
             >
               {topics.map((topic) => (
                 <option key={topic.value} value={topic.value}>
                   {topic.label}
                 </option>
               ))}
-            </select>
+            </motion.select>
 
-            <select
+            <motion.select
               value={selectedYear}
               onChange={(e) => setSelectedYear(e.target.value)}
-              className="border px-3 py-2 rounded"
+              className="bg-white/90 backdrop-blur-sm border-2 border-blue-300/50 px-4 py-3 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 text-gray-700 font-medium"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
             >
               {years.map((year) => (
                 <option key={year} value={year}>
                   {year}
                 </option>
               ))}
-            </select>
+            </motion.select>
           </div>
 
-          {tableauUrl ? (
-            <div className="bg-white p-4 rounded shadow">
-              <iframe
-                src={tableauUrl}
-                width="100%"
-                height="700"
-                frameBorder="0"
-                allowFullScreen
-                title={`Dashboard-${selectedTopic}-${selectedYear}`}
-                style={{ border: "none" }}
-              />
+          {/* Dashboard Container */}
+          <motion.div 
+            className="bg-white/90 backdrop-blur-sm p-6 rounded-xl shadow-xl border border-gray-200/50 relative overflow-hidden"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.9, duration: 0.8 }}
+          >
+            {/* Decorative corner elements */}
+            <div className="absolute top-0 left-0 w-20 h-20 bg-gradient-to-br from-green-400/20 to-transparent rounded-br-full" />
+            <div className="absolute bottom-0 right-0 w-20 h-20 bg-gradient-to-tl from-blue-400/20 to-transparent rounded-tl-full" />
+            
+            <div className="relative z-10">
+              {tableauUrl ? (
+                <iframe
+                  src={tableauUrl}
+                  width="100%"
+                  height="700"
+                  frameBorder="0"
+                  allowFullScreen
+                  title={`Dashboard-${selectedTopic}-${selectedYear}`}
+                  style={{ border: "none", borderRadius: "8px" }}
+                  className="shadow-lg"
+                />
+              ) : (
+                <div className="bg-gradient-to-r from-gray-100 to-gray-200 rounded-lg p-8 text-center">
+                  <motion.div
+                    animate={{
+                      rotate: 360
+                    }}
+                    transition={{
+                      duration: 20,
+                      repeat: Infinity,
+                      ease: "linear"
+                    }}
+                    className="inline-block text-6xl mb-4"
+                  >
+                    📊
+                  </motion.div>
+                  <h4 className="text-xl font-semibold text-gray-600 mb-2">
+                    No dashboard available for this selection
+                  </h4>
+                  <p className="text-gray-500">
+                    Please try a different topic or year combination
+                  </p>
+                </div>
+              )}
             </div>
-          ) : (
-            <div className="bg-white p-4 rounded shadow text-gray-500 text-center">
-              No dashboard available for this selection.
-            </div>
-          )}
-        </div>
+          </motion.div>
+        </motion.div>
       </div>
-    </PageWrapper>
+    </div>
   );
 };
 
