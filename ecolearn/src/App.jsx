@@ -1,5 +1,6 @@
 // src/App.jsx
 import { Routes, Route, Navigate } from "react-router-dom";
+import { UserProgressProvider } from './context/UserProgressContext'; // Add this line
 import DashboardLayout from "./components/DashboardLayout";
 import Landing from "./pages/Landing";
 import Lessons from "./pages/Lessons";
@@ -11,6 +12,8 @@ import WelcomePage from "./pages/WelcomePage";
 import PrivateRoute from "./components/PrivateRoute";
 import LiveData from "./pages/LiveData";
 import Profile from "./pages/Profile";
+import LessonDemo from './pages/LessonDemo';
+
 
 import "./App.css"; // ✅ global font + layout reset
 
@@ -55,6 +58,7 @@ function App() {
         <Route index element={<Navigate to="lessons" replace />} />
         <Route path="profile" element={<Profile />} />
         <Route path="lessons" element={<Lessons />} />
+        <Route path="lessons/demo/:lessonId" element={<LessonDemo />} />
         <Route path="challenges" element={<Challenges />} />
         <Route path="leaderboard" element={<Leaderboard />} />
         <Route path="livedata" element={<LiveData />} />

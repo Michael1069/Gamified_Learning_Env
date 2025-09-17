@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth import authenticate
 from .models import CustomUser
+from .models import UserProgress, LessonProgress, Achievement
 
 class UserRegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
@@ -28,3 +29,18 @@ class UserLoginSerializer(serializers.Serializer):
         if user and user.is_active:
             return user
         raise serializers.ValidationError("Invalid credentials")
+
+class UserProgressSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserProgress
+        fields = ['total_eco_points', 'level', 'lessons_completed', 'streak_days', 'updated_at']
+
+class LessonProgressSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = LessonProgress
+        fields = ['lesson_id', 'lesson_title', 'completed', 'eco_reward', 'completed_at']
+
+class AchievementSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Achievement
+        fields = ['achievement_id', 'name', 'description', 'icon', 'unlocked', 'unlocked_at']
