@@ -1,10 +1,44 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap');
+
+/* Arcade Heading Font */
+.font-retro-heading {
+  font-family: 'Press Start 2P', cursive;
+}
+
+html, body, #root {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  background: #f3f4f6; /* Matches Tailwind bg-gray-100 */
+}
+
+/* Apply retro font globally */
+body {
+  font-family: 'VT323', monospace;
+  letter-spacing: 0.5px;
+}
+
+/* Optional: remove scroll bounce margins on some browsers */
+* {
+  box-sizing: border-box;
+}
+
+/* Retro Console Style */
+.font-retro-body {
+  font-family: 'VT323', monospace;
+}
+
+/* REMOVE this to prevent white border:
 #root {
   max-width: 1280px;
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
 }
+*/
 
+/* Keep your logo & animation styles if needed */
 .logo {
   height: 6em;
   padding: 1.5em;
